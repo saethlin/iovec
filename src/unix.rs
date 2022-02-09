@@ -18,10 +18,10 @@
 //! // Use the `os_bufs` slice with `writev`.
 //! ```
 
-use IoVec;
 use libc;
+use IoVec;
 
-use std::mem;
+use std::slice;
 
 /// Convert a slice of `IoVec` refs to a slice of `libc::iovec`.
 ///
@@ -42,7 +42,7 @@ use std::mem;
 /// // Use the `os_bufs` slice with `writev`.
 /// ```
 pub fn as_os_slice<'a>(iov: &'a [&IoVec]) -> &'a [libc::iovec] {
-    unsafe { mem::transmute(iov) }
+    unsafe { slice::from_raw_parts(iov.as_ptr() as *const libc::iovec, iov.len()) }
 }
 
 /// Convert a mutable slice of `IoVec` refs to a mutable slice of `libc::iovec`.
@@ -64,5 +64,5 @@ pub fn as_os_slice<'a>(iov: &'a [&IoVec]) -> &'a [libc::iovec] {
 /// // Use the `os_bufs` slice with `readv`.
 /// ```
 pub fn as_os_slice_mut<'a>(iov: &'a mut [&mut IoVec]) -> &'a mut [libc::iovec] {
-    unsafe { mem::transmute(iov) }
+    unsafe { slice::from_raw_parts_mut(iov.as_mut_ptr() as *mut libc::iovec, iov.len()) }
 }
